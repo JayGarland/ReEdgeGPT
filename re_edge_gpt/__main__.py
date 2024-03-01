@@ -77,11 +77,19 @@ async def async_main(args: argparse.Namespace) -> None:
         if file_path.exists():
             with file_path.open("r", encoding="utf-8") as f:
                 cookies = json.load(f)
-    bot = await Chatbot.create(proxy=args.proxy, cookies=cookies)
+    bot = await Chatbot.create(proxy=args.proxy, cookies=cookies, mode= "Sydney")
     session = create_session()
     completer = create_completer(["!help", "!exit", "!reset"])
     initial_prompt = args.prompt
-
+    file_path = Path("personas.json")
+    if file_path.exists():
+        with file_path.open("r", encoding="utf-8") as f:
+            personas = json.load(f)
+            persona = personas["540"]
+    else:
+        print("no!!")
+        persona = None
+    savedpersona = persona
     # Log chat history
     def p_hist(*args, **kwargs) -> None:
         pass
@@ -120,6 +128,7 @@ async def async_main(args: argparse.Namespace) -> None:
             continue
         if question == "!reset":
             await bot.reset()
+            persona = savedpersona
             continue
         print("Bot:")
         p_hist("Bot:")
@@ -130,7 +139,7 @@ async def async_main(args: argparse.Namespace) -> None:
                     conversation_style=args.style,
                     wss_link=args.wss_link,
                     search_result=args.search_result,
-                    locale=args.locale,
+                    locale=args.locale
                 )
             )["item"]["messages"][-1]["adaptiveCards"][0]["body"][0]["text"]
             print(response)
@@ -145,7 +154,7 @@ async def async_main(args: argparse.Namespace) -> None:
                             conversation_style=args.style,
                             wss_link=args.wss_link,
                             search_result=args.search_result,
-                            locale=args.locale,
+                            locale=args.locale
                     ):
                         if not final:
                             if not wrote:
@@ -165,6 +174,7 @@ async def async_main(args: argparse.Namespace) -> None:
                         wss_link=args.wss_link,
                         search_result=args.search_result,
                         locale=args.locale,
+                        webpage_context= persona
                 ):
                     if not final:
                         if not wrote:
@@ -176,6 +186,7 @@ async def async_main(args: argparse.Namespace) -> None:
                         wrote = len(response)
                 print()
                 p_hist()
+        persona = None
     if args.history_file:
         f.close()
     await bot.close()
@@ -210,12 +221,12 @@ def main() -> None:
     parser.add_argument(
         "--style",
         choices=["creative", "balanced", "precise"],
-        default="balanced",
+        default="creative",
     )
     parser.add_argument(
         "--prompt",
         type=str,
-        default="",
+        default="你好",
         required=False,
         help="prompt to start with",
     )
