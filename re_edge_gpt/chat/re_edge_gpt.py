@@ -62,7 +62,7 @@ class Chatbot:
     async def create(
             proxy: str | None = None,
             cookies: list[dict] | None = None,
-            mode: str = "Bing",
+            mode: str | None = None,
             plugin_ids: Union[None, List[str]] = None
     ) -> Chatbot:
         self = Chatbot.__new__(Chatbot)
@@ -224,7 +224,7 @@ class Chatbot:
         """
         await self.close()
         self.chat_hub = ChatHub(
-            await Conversation.create(self.proxy, cookies=self.chat_hub.cookies),
+            await Conversation.create(self.proxy, cookies=self.chat_hub.cookies, mode= "sydney"),
             proxy=self.proxy,
             cookies=self.chat_hub.cookies,
         )
