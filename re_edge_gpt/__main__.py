@@ -85,7 +85,7 @@ async def async_main(args: argparse.Namespace) -> None:
     if file_path.exists():
         with file_path.open("r", encoding="utf-8") as f:
             personas = json.load(f)
-            persona = personas["540"]
+            persona = personas[args.persona]
     else:
         print("no!!")
         persona = None
@@ -221,12 +221,12 @@ def main() -> None:
     parser.add_argument(
         "--style",
         choices=["creative", "balanced", "precise"],
-        default="creative",
+        default="balanced",
     )
     parser.add_argument(
         "--prompt",
         type=str,
-        default="你好",
+        default="",
         required=False,
         help="prompt to start with",
     )
@@ -250,6 +250,13 @@ def main() -> None:
         default="en-US",
         required=False,
         help="your locale",
+    )
+    parser.add_argument(
+        "--persona",
+        type=str,
+        default="new",
+        required=False,
+        help="preset persona"
     )
     args = parser.parse_args()
     asyncio.run(async_main(args))
