@@ -22,6 +22,7 @@ from re_edge_gpt.utils.utilities import append_identifier
 from re_edge_gpt.utils.utilities import guess_locale
 from .conversation import Conversation
 from .request import ChatHubRequest
+from ..plugins.suno import generate_suno_music
 from ..utils.exception.exceptions import NoResultsFound, ResponseError
 
 ssl_context = ssl.create_default_context()
@@ -40,7 +41,7 @@ class ChatHub:
             conversation: Conversation,
             proxy: str = None,
             cookies: Union[List[dict], None] = None,
-            mode: str = "Bing"
+            mode: str = "Bing",
     ) -> None:
         self.aio_session = None
         self.request: ChatHubRequest
@@ -84,7 +85,9 @@ class ChatHub:
             # Use for attachment
             attachment: dict = None,
             remove_options: list = None,
-            add_options: list = None
+            add_options: list = None,
+            plugins: list = None,
+            message_type: str = "Chat"
     ) -> Generator[bool, Union[dict, str], None]:
         """ """
         if self.encrypted_conversation_signature is not None:
@@ -121,7 +124,7 @@ class ChatHub:
         # Construct a ChatHub request
         if remove_options is not None:
             for option in remove_options:
-                if option in remove_options:
+                if option in conversation_style.value:
                     conversation_style.value.remove(option)
         if add_options is not None:
             for option in add_options:
@@ -133,6 +136,8 @@ class ChatHub:
             search_result=search_result,
             locale=locale,
             image_url=image_url,
+            plugins=plugins,
+            message_type=message_type,
         )
         # Send request
         await wss.send_str(append_identifier(self.request.struct))

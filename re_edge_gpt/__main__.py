@@ -221,7 +221,7 @@ def main() -> None:
     parser.add_argument(
         "--style",
         choices=["creative", "balanced", "precise"],
-        default="balanced",
+        default="creative",
     )
     parser.add_argument(
         "--prompt",
